@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "Confirmed";
+}
+
+<h1>Delivery info</h1>
+
+<h4>Personal data</h4>
+<p>Name:        @ViewBag.name</p>
+<p>Last name:   @ViewBag.surname</p>
+<p>Phone:       @ViewBag.phone</p>
+
+<h4>Address</h4>
+<p>City:         @ViewBag.city</p>
+<p>Postcode:   @ViewBag.postcode</p>
+<p>Street:       @ViewBag.street</p>
+<p>House no.:    @ViewBag.house</p>
+
+<h3>Payment method:   @ViewBag.payment</h3>
+
+
+<button type="button"  onclick="location.href='@Url.Action("Index", "Shop")'" style="color: white; padding: 15px 32px; margin-top: 10px; font-size: 16px; background-color: #4CAF50;">Shop</button>
+
+

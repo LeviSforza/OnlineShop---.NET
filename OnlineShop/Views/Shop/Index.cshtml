@@ -1,0 +1,179 @@
+﻿@model IEnumerable<Lista10.Models.Category>
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="#">@Html.ActionLink("All", "Index", "Shop", null, null)</a>
+
+    @foreach (var item in Model)
+    {
+        <a href="#">@Html.ActionLink(@item.Name, "Index", "Shop", new { category = item.CategoryID }, null)</a>
+    }
+</div>
+
+<p style="font-size: 20px; font-weight: 400;">
+    <a class="cart" asp-controller="Cart" asp-action="Cart">Go to your shopping cart</a>
+</p>
+
+
+<div id="main">
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Filter by Category</span>
+</div>
+
+<h5>Category: @ViewBag.category</h5>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Image
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="tbody">
+        @foreach (var item in (ViewBag.list))
+        {
+            <tr>
+                <td id="name">
+                    @item.Name
+                </td>
+                <td id="price">
+                    @item.Price
+                </td>
+                <td id="category">
+                    @item.Category.Name
+                </td>
+                <td id="imgTD">
+                    <img src=@item.ImageUrl id="img" asp-append-version="true" width="100" height="100" />
+                </td>
+                <td id="other">
+                        <a asp-controller="Cart" asp-action="AddStay" asp-route-id="@item.ArticleID">Add to cart</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-controller="Cart" asp-action="Cart">Go to the cart</a>
+
+<div id="currId" hidden>@ViewBag.lastID</div>
+<div id="catID" hidden>@ViewBag.catID</div>
+
+<div id="next">
+    <button onclick="jsNext()"> Show more </button>
+</div>
+
+@section Scripts{
+    <script>
+        function jsAjax(word, suffix) {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                if (this.status === 200) {
+                    try {
+                        console.log("Resp:");
+                        console.log(this.responseText);
+                        const articles = JSON.parse(this.responseText);
+                        console.log("Articles:");
+                        console.log(articles);
+                        if (articles.length == 0) {
+                            document.getElementById("next").remove();
+                        }
+                        for (i = 0; i < articles.length; i++) {
+                            console.log(articles[i]);
+                            const article = articles[i];
+                            console.log(article.price);
+                            var tr = document.createElement("tr");
+                            var tdName = document.createElement("td");
+                            var tdPrice = document.createElement("td");
+                            var tdCategory = document.createElement("td");
+                            var tdImg = document.createElement("td");
+                            var tdOther = document.createElement("td");
+
+                            tdName.innerText = article.name;
+                            tdPrice.innerText = article.price;
+                            tdCategory.innerText = article.category.name;
+                            var img = document.createElement("img");
+                            img.width = 100;
+                            img.height = 100;
+                            img.src = article.imageUrl
+                            tdImg.appendChild(img);
+
+                            var url = '@Url.Action("AddStay", "Cart")' + "/" + article.articleID;
+                            var a = document.createElement("a");
+                            a.href = url;
+                            a.append("Add to cart")
+
+                            tdOther.appendChild(a);
+
+                            tr.appendChild(tdName);
+                            tr.appendChild(tdPrice);
+                            tr.appendChild(tdCategory);
+                            tr.appendChild(tdImg);
+                            tr.appendChild(tdOther);
+                            document.getElementById("tbody").appendChild(tr);
+                            document.getElementById("currId").innerText = article.articleID;
+                        }
+
+                    } catch (e) {
+                        console.warn('There was an error in JSON. Could not parse.');
+                    }
+                } else if (this.status === 204) { // 204 No Content, so NULL
+                    window.alert("No " + word + " elements");
+                } else {
+                    console.warn("Recived " + this.status + " in response code.");
+                }
+            };
+            let id = document.getElementById("currId");
+            let catId = document.getElementById("catID");
+            console.log(catId);
+            console.log(catId.innerHTML.trim());
+            let str = "/api/article/" + suffix + "/" + id.innerHTML.trim() + "," + 4 + "," + catId.innerHTML.trim();
+
+          
+            console.log(str);
+
+            xhr.open("get", str);
+            xhr.send();
+        }
+
+        function jsNext() {
+            jsAjax("more", "next");
+            console.log("CLicked!!!")
+        }
+
+
+    </script>
+
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+            document.getElementById("main").style.marginLeft = "250px";
+            document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+            console.log("CLicked!!!")
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+            document.getElementById("main").style.marginLeft = "0";
+            document.body.style.backgroundColor = "white";
+        }
+
+    </script>
+
+
+}
+
+

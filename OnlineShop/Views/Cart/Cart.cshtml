@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<h1>Shopping Cart</h1>
+
+<p class=@ViewBag.red>@ViewBag.message</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Image
+            </th>
+            <th>
+                Amount in cart
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (ViewBag.list))
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Price
+                </td>
+                <td>
+                    @item.Category.Name
+                </td>
+                <td>
+                    <img src=@item.ImageUrl id="img" asp-append-version="true" width="100" height="100" />
+                </td>
+                <td>
+                    @ViewBag.amount[@item.ArticleID]
+                    <a asp-controller="Cart" asp-action="Add" asp-route-id="@item.ArticleID" style="font-size:30px">+</a>
+                    <a asp-controller="Cart" asp-action="Minus" asp-route-id="@item.ArticleID" style="font-size:30px">-</a>
+                    <p>
+                        <a asp-controller="Cart" asp-action="Delete" asp-route-id="@item.ArticleID">Remove from cart</a>
+                    </p>
+                </td>
+                <td>
+                    <a asp-controller="Articles" asp-action="Details" asp-route-id="@item.ArticleID">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p style="text-align: right; font-size: 26px; font-weight: 600;">To pay: @ViewBag.sum</p>
+
+<button type="button" style="color: white; padding: 15px 32px; font-size: 16px; margin: 4px 2px; background-color: #4CAF50;" onclick="location.href='@Url.Action("Order", "Cart")'" @ViewBag.disabled>Place order</button>
+
